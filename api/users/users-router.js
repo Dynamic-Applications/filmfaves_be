@@ -1,6 +1,5 @@
 const cors = require("cors");
 const express = require("express");
-// const cors = require("cors");
 const User = require("./users-model");
 const { restricted } = require("../auth/auth-middleware");
 

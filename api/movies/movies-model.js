@@ -1,7 +1,7 @@
 const db = require("../../config/db");
 
 const getAll = async () => {
-    return db.query("SELECT movie_id, title, director, rate, genre, popular, description, image FROM movies")
+    return db.query("SELECT * FROM movies")
 }
 
 const getById = async (id) => {

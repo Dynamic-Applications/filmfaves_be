@@ -1,29 +1,32 @@
 // const express = require("express");
-// const cors = require("cors");
+const cors = require("cors");
 const Movie = require("./movies-model");
 const router = require("express").Router();
 
 
-router.get("/", (req, res) => {
-    Movie.getAll()
-        .then((movies) => {
-            res.json(movies);
-        })
-        .catch((err) => {
+router.get("/", async(req, res) => {
+
+    try {
+            const result = await Movie.getAll();
+            if (!result.rows || result.rows.length === 0) {
+                return res.status(404).json({ message: "No movies found." });
+            }
+            res.json(result.rows);
+        } catch (err) {
             res.status(500).json({
                 message: `Failed to retrieve movies: ${err.message}`,
-            })
-        })
+            });
+        }
 })
 
 router.get("/:id", async (req, res) => {
     try {
         const result = await Movie.getById(req.params.id);
-        if (!result) {
+        if (!result.rows || result.rows.length === 0) {
             return res.status(404).send("Movie not found");
         }
 
-        res.json(result);
+        res.json(result.rows);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");

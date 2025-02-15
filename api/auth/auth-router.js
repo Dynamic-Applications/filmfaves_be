@@ -73,10 +73,16 @@ router.get("/logout", async(req, res) => {
     const result = await User.findByUsername(req.body.username);
     const user = result.rows[0];
     console.log("User logged out:", user.username);
+
+    // Clear the cookie
     res.clearCookie("token");
+
+    // Add CORS headers explicitly
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Match frontend URL
+    res.setHeader("Access-Control-Allow-Credentials", "true"); // If you're sending credentials like cookies
+
+    // Respond with a success message
     res.json({ message: "You have successfully logged out." });
-    
-    
 });
 
 
