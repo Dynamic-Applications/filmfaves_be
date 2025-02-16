@@ -8,11 +8,12 @@ const authRouter = require("./api/auth/auth-router");
 const rolesRouter = require("./api/roles/roles-router");
 
 const server = express();
+// server.use(cors());
 
 // Define allowed origins
 const allowedOrigins = [
-    process.env.UI_URL_PROD, // For local development
-    process.env.UI_URL_LOCAL, // On vercel
+    "http://localhost:3000", // On local SERVER
+    process.env.UI_URL_PROD, // On deployment server
 ];
 
 // Configure CORS options
