@@ -1,5 +1,6 @@
 const db = require("../../config/db");
 
+
 const findAll = async () => {
     return db.query(
         `SELECT users.id, users.username, users.email, 

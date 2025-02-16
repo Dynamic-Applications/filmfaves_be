@@ -1,8 +1,9 @@
 const Movie = require("./movies-model");
 const router = require("express").Router();
+const { restricted } = require("../auth/auth-middleware");
 
 
-router.get("/", async(req, res) => {
+router.get("/", restricted, async(req, res) => {
 
     try {
             const result = await Movie.getAll();
@@ -17,7 +18,7 @@ router.get("/", async(req, res) => {
         }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", restricted, async (req, res) => {
     try {
         const id = req.params.id;
 
