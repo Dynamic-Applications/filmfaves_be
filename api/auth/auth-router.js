@@ -69,21 +69,22 @@ function buildToken(user, roleName) {
     return jwt.sign(payload, process.env.JWT_SECRET, options);
 }
 
-router.get("/logout", async(req, res) => {
-    const result = await User.findByUsername(req.body.username);
-    const user = result.rows[0];
-    console.log("User logged out:", user.username);
+router.get("/logout", async (req, res) => {
+    try {
+        // Log the action (optional, only if you have the username from the session or token)
+        console.log("User logged out.");
 
-    // Clear the cookie
-    res.clearCookie("token");
+        // Clear the cookie
+        res.clearCookie("token");
 
-    // Add CORS headers explicitly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Match frontend URL
-    res.setHeader("Access-Control-Allow-Credentials", "true"); // If you're sending credentials like cookies
-
-    // Respond with a success message
-    res.json({ message: "You have successfully logged out." });
+        // Respond with a success message
+        res.status(200).json({ message: "You have successfully logged out." });
+    } catch (error) {
+        console.error("Error during logout:", error.message);
+        res.status(500).json({ message: "An error occurred during logout." });
+    }
 });
+
 
 
 
