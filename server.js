@@ -8,28 +8,18 @@ const authRouter = require("./api/auth/auth-router");
 const rolesRouter = require("./api/roles/roles-router");
 
 const server = express();
-// server.use(cors());
 
-// Define allowed origins
+// Configure CORS
 const allowedOrigins = [
-    "http://localhost:3000", // On local SERVER
-    process.env.UI_URL_PROD, // On deployment server
+    "http://localhost:3000",           // Development frontend
+    "https://filmfaves-nine.vercel.app" // Production frontend
 ];
-
-// Configure CORS options
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Allow the origin
-        } else {
-            callback(new Error("Not allowed by CORS")); // Reject the origin
-        }
-    },
-    credentials: true, // If you need to support cookies or Authorization headers
-};
-
-// Use CORS middleware with options
-server.use(cors(corsOptions));
+server.use(
+    cors({
+        origin: allowedOrigins,
+        credentials: true, // Allow cookies or auth headers
+    })
+);
 
 // Parse JSON body
 server.use(express.json());
