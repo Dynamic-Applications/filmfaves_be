@@ -21,12 +21,16 @@ router.get("/", async(req, res) => {
 
 router.get("/:id", async (req, res) => {
     try {
-        const result = await Movie.getById(req.params.id);
-        if (!result.rows || result.rows.length === 0) {
+        const id = req.params.id;
+
+        const result = await Movie.getById(id);
+
+        if (!result) {
             return res.status(404).send("Movie not found");
         }
 
-        res.json(result.rows);
+        // Wrap the result in an array
+        res.json([result]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send("Server Error");

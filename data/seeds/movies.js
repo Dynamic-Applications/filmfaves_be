@@ -14,14 +14,14 @@ exports.seed = function (knex) {
                     image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjZ651J25IyTliHpDADptLvd74e2T-oEHnEKSc9XtTTNd_wfzH505o183AYwSOGsLFC5Pt6GOJa9bOxIJPInwFa9_TJdEABVb4pQ2SFD4cm-Q2VU4fyxmjrQkVNbEfTjTjN0NafE5fwOoJBrDBJgZY2mXpfKy9yvGz2QGxPEiD33BNyM452jGUu25oq/s320/godfather.jpg",
                 },
                 {
-                    title: "Dumb and Dumber",
-                    director: "The Farely Brothers",
-                    rate: 2,
-                    genre: "Comedy",
-                    popular: false,
+                    title: "Jujutsu Kaisen",
+                    director: "Sunghoo Park",
+                    rate: "0.00",
+                    genre: "Anime",
+                    popular: true,
                     description:
-                        "After a woman leaves a briefcase at the airport terminal, a dumb limo driver and his dumber friend set out on a hilarious cross-country road trip to Aspen to return it.",
-                    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgN8s4NCh5G6-Az_gWfnMm0XYUT2V7CV83W63s3YvmXYQA5t9-VJUI5dVQILDVdQNCMBPt71LxsReK5AoZjps0K5WPCaxumAi2zFxt-cdZUwzWEgOTLinyU-18N1YK7NlQyCSXfWWp--XX9NZPWH7ttjoQTq-s65Gx6ZXjnhiFhsRzzKRAqtMUm8JQy/s320/dumb_and_dumber.jpg",
+                        "Jujutsu Kaisen (呪術廻戦, rgh. \"Sorcery Battle\")[a] is a Japanese manga series written and illustrated by Gege Akutami. It was serialized in Shueisha's shōnen manga magazine Weekly Shōnen Jump from March 2018 to September 2024, with its chapters collected in 30 tankōbon volumes. The story follows high school student Yuji Itadori as he joins a secret organization of Jujutsu Sorcerers to eliminate a powerful Curse named Ryomen Sukuna, of whom Yuji becomes the host. Jujutsu Kaisen is a sequel to Akutami's Tokyo Metropolitan Curse Technical School, serialized in Shueisha's Jump Giga from April to July 2017, later collected in a tankōbon volume, retroactively titled as Jujutsu Kaisen 0, in December 2018.",
+                    image: "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2024/12/gojo-past-arc-jujutsu.jpg?q=70&fit=crop&w=1140&h=&dpr=1",
                 },
                 {
                     title: "Terminator 2: Judgement Day",

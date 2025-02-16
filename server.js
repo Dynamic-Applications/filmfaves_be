@@ -7,23 +7,31 @@ const usersRouter = require("./api/users/users-router");
 const authRouter = require("./api/auth/auth-router");
 const rolesRouter = require("./api/roles/roles-router");
 
-const server = express()
+const server = express();
 
-// CORS middleware with more control
+// Define allowed origins
+const allowedOrigins = [
+    "https://filmfaves-nine.vercel.app", // Your frontend on Vercel
+    "http://localhost:3000", // For local development
+];
+
+// Configure CORS options
 const corsOptions = {
-  origin: "http://localhost:3002", // Frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Allow cookies or authentication info (optional)
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true); // Allow the origin
+        } else {
+            callback(new Error("Not allowed by CORS")); // Reject the origin
+        }
+    },
+    credentials: true, // If you need to support cookies or Authorization headers
 };
 
-// Apply CORS middleware
+// Use CORS middleware with options
 server.use(cors(corsOptions));
-server.use(cors());
-server.use(express.json());
 
-// Handle preflight OPTIONS requests
-server.options("*", cors(corsOptions)); // Handle preflight for all routes
+// Parse JSON body
+server.use(express.json());
 
 // Define routes
 server.use("/", welcomeRouter);
