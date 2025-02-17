@@ -11,8 +11,8 @@ const server = express();
 
 // Configure CORS
 const allowedOrigins = [
-    "http://localhost:3000",           // Development frontend
-    "https://filmfaves-nine.vercel.app" // Production frontend
+    "http://localhost:3000", // Development frontend
+    process.env.UI_URL_PROD, // Production frontend
 ];
 server.use(
     cors({
