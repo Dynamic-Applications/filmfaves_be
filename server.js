@@ -6,6 +6,7 @@ const moviesRouter = require("./api/movies/movies-router");
 const usersRouter = require("./api/users/users-router");
 const authRouter = require("./api/auth/auth-router");
 const rolesRouter = require("./api/roles/roles-router");
+const passResetsRouter = require("./api/passResets/passResets-router");
 
 const server = express();
 
@@ -30,5 +31,6 @@ server.use("/movies", moviesRouter);
 server.use("/users", usersRouter);
 server.use("/auth", authRouter);
 server.use("/roles", rolesRouter);
+server.use("/passresets", passResetsRouter);
 
 module.exports = server;
