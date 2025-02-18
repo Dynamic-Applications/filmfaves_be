@@ -7,7 +7,7 @@ const router = express.Router();
 
 const sendResetEmail = async (email, resetToken) => {
     var transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: process.env.EMAIL_HOST,
         auth: {
             user: process.env.EMAIL_HOST_USER,
             pass: process.env.EMAIL_HOST_PASSWORD,
@@ -36,16 +36,14 @@ router.post("/", async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(20).toString("hex");
-        const resetTokenExpiry = Math.floor(Date.now() / 1000) + 30 * 60; // Token expires in 30 minutes
+        const resetTokenExpiry = Date.now() + 30 * 60 * 1000; // Token expires in 30 minutes
 
-        // Update the user with the reset token and expiration time
-        await User.updateResetToken(
-            email,
-            resetToken,
-            resetTokenExpiry
-        );
+        await User.updateResetToken(email, resetToken, resetTokenExpiry);
 
-        // Send the password reset email
+        console.log(
+            `Token ${resetToken} with expiry ${resetTokenExpiry} saved for email ${email}`
+        ); // Debugging
+
         await sendResetEmail(email, resetToken);
 
         res.status(200).json({ message: "Password reset email sent!" });
@@ -56,12 +54,12 @@ router.post("/", async (req, res) => {
     }
 });
 
+
 // Reset the password
 router.post("/reset-password", async (req, res) => {
     const { resetToken, newPassword } = req.body;
 
     try {
-        // Find the user by reset token
         const user = await User.findByResetToken(resetToken);
         console.log("User found by reset token:", user); // Debugging
 
@@ -73,12 +71,11 @@ router.post("/reset-password", async (req, res) => {
 
         const userRecord = user.rows[0];
 
-        // Check if the reset token has expired
+        // Adjusting expiry check
         if (Date.now() > userRecord.reset_password_token_expires) {
             return res.status(400).json({ message: "Reset token has expired" });
         }
 
-        // Hash the new password and update the user's password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await User.updatePassword(userRecord.id, hashedPassword);
 
@@ -91,6 +88,7 @@ router.post("/reset-password", async (req, res) => {
         });
     }
 });
+
 
 
 module.exports = router;
