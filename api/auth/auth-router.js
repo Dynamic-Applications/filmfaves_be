@@ -64,7 +64,7 @@ function buildToken(user, roleName) {
         role_name: roleName,
     };
     const options = {
-        expiresIn: "30min",
+        expiresIn: "10min",
     };
     return jwt.sign(payload, process.env.JWT_SECRET, options);
 }
