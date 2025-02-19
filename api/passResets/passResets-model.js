@@ -30,7 +30,9 @@ const findByResetToken = async (resetToken) => {
             return null; // Return null if no user found
         }
 
-        return result.rows[0]; // Returns user if token is valid and not expired
+        console.log("Database result for reset token:", result.rows);
+
+        return result; // Returns user if token is valid and not expired
     } catch (err) {
         console.error("Error during the token lookup:", err);
         throw err;

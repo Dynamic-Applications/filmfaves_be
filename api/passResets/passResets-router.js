@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(32).toString("hex");
-        const resetTokenExpiry = Date.now() + 30 * 60 * 1000; // Token expires in 30 minutes
+        const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
 
         await User.updateResetToken(email, resetToken, resetTokenExpiry);
 
