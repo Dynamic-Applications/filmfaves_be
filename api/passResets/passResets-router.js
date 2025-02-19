@@ -18,7 +18,7 @@ const sendResetEmail = async (email, resetToken) => {
         from: `"FilmFaves Support" <${process.env.EMAIL_HOST_USER}>`,
         to: email,
         subject: "Password Reset Request",
-        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/passresets/reset-password/${resetToken}\n\nThis link will expire in 30 minutes.`,
+        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/reset-password/${resetToken}\n\nThis link will expire in 30 minutes.`,
     };
 
     return transporter.sendMail(mailOptions);
