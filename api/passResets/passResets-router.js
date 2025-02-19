@@ -31,11 +31,11 @@ router.post("/", async (req, res) => {
     try {
         const user = await User.findByEmail(email);
 
-        if (!user.rows || user.rows.length === 0) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetToken = crypto.randomBytes(32).toString("hex");
         const resetTokenExpiry = Date.now() + 30 * 60 * 1000; // Token expires in 30 minutes
 
         await User.updateResetToken(email, resetToken, resetTokenExpiry);
@@ -63,7 +63,7 @@ router.post("/reset-password", async (req, res) => {
         const user = await User.findByResetToken(resetToken);
         console.log("User found by reset token:", user); // Debugging
 
-        if (!user || !user.rows || user.rows.length === 0) {
+        if (!user) {
             return res
                 .status(400)
                 .json({ message: "Invalid or expired reset token" });
