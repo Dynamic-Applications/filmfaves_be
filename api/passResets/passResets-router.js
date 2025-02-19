@@ -76,7 +76,7 @@ router.post("/reset-password", async (req, res) => {
             return res.status(400).json({ message: "Reset token has expired" });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const hashedPassword = await bcrypt.hash(newPassword, 5);
         await User.updatePassword(userRecord.id, hashedPassword);
 
         res.status(200).json({
