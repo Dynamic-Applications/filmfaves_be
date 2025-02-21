@@ -68,7 +68,7 @@ router.post("/reset-password", async (req, res) => {
         if (!user) {
             return res
                 .status(400)
-                .json({ message: "Invalid or expired reset link. Request a new one." });
+                .json({ message: "Reset link has expired. Request a new one." });
         }
 
         const userRecord = user.rows[0];
