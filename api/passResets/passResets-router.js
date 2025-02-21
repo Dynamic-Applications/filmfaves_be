@@ -36,13 +36,15 @@ router.post("/", async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(32).toString("hex");
+        const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+
         const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
 
-        await User.updateResetToken(email, resetToken, resetTokenExpiry);
+        await User.updateResetToken(email, resetTokenHash, resetTokenExpiry);
 
         console.log(
             `Token ${resetToken} with expiry ${resetTokenExpiry} saved for email ${email}`
-        ); // Debugging
+        );
 
         await sendResetEmail(email, resetToken);
 
@@ -66,7 +68,7 @@ router.post("/reset-password", async (req, res) => {
         if (!user) {
             return res
                 .status(400)
-                .json({ message: "Invalid or expired reset token" });
+                .json({ message: "Invalid or expired reset link. Request a new one." });
         }
 
         const userRecord = user.rows[0];
