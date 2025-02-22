@@ -69,6 +69,17 @@ const addUser = async (username, email, password, role_names = ["user"]) => {
     }
 };
 
+const findUsersByRole = async (role_name) => {
+    return db.query(
+        `SELECT users.id, users.username, users.email 
+        FROM users 
+        JOIN user_roles ON users.id = user_roles.user_id 
+        JOIN roles ON user_roles.role_id = roles.id 
+        WHERE roles.role_name = $1`,
+        [role_name]
+    );
+};
+
 const assignRoleToUser = async (userId, roleName) => {
     try {
         const roleResult = await db.query(
@@ -129,6 +140,7 @@ module.exports = {
     findById,
     addUser,
     assignRoleToUser,
+    findUsersByRole,
     removeRoleFromUser,
     deleteUser,
 };

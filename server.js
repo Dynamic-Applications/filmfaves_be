@@ -3,10 +3,9 @@ const cors = require("cors");
 
 const welcomeRouter = require("./api/welcome/welcome-router");
 const moviesRouter = require("./api/movies/movies-router");
-const usersRouter = require("./api/users/users-router");
+const usersRouter = require("./api/users-roles/users-roles-router");
 const authRouter = require("./api/auth/auth-router");
-const rolesRouter = require("./api/roles/roles-router");
-const passResetsRouter = require("./api/passResets/passResets-router");
+const passResetsRouter = require("./api/passResets/passresets-router");
 
 const server = express();
 
@@ -30,7 +29,6 @@ server.use("/", welcomeRouter);
 server.use("/movies", moviesRouter);
 server.use("/users", usersRouter);
 server.use("/auth", authRouter);
-server.use("/roles", rolesRouter);
 server.use("/passresets", passResetsRouter);
 
 module.exports = server;

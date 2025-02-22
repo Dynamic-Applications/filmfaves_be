@@ -1,12 +1,12 @@
 const cors = require("cors");
 const express = require("express");
-const User = require("./users-model");
+const User = require("./users-roles-model");
 const { restricted } = require("../auth/auth-middleware");
 
 const router = express.Router();
 
 // Get all users with their roles
-router.get("/", restricted, async (req, res) => {
+router.get("/role", restricted, async (req, res) => {
     try {
         const result = await User.findAll();
         if (!result.rows || result.rows.length === 0) {
@@ -45,7 +45,7 @@ router.get("/role/:role_name", restricted, async (req, res) => {
     const { role_name } = req.params;
 
     try {
-        const result = await User.findByRole(role_name);
+        const result = await User.findUsersByRole(role_name);
         if (!result.rows || result.rows.length === 0) {
             return res
                 .status(404)
@@ -81,7 +81,9 @@ router.put("/:userId/assign-role", async (req, res) => {
     } catch (err) {
         // Handle errors (e.g., role not found, etc.)
         console.error(err);
-        res.status(500).json({ message: `Failed to assign role: ${err.message}` });
+        res.status(500).json({
+            message: `Failed to assign role: ${err.message}`,
+        });
     }
 });
 
@@ -107,7 +109,9 @@ router.put("/:userId/remove-role", async (req, res) => {
     } catch (err) {
         // Handle errors (e.g., role not found, etc.)
         console.error(err);
-        res.status(500).json({ message: `Failed to remove role: ${err.message}` });
+        res.status(500).json({
+            message: `Failed to remove role: ${err.message}`,
+        });
     }
 });
 
@@ -127,7 +131,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-

@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../users/users-model");
+const User = require("../users-roles/users-roles-model");
 
 const router = express.Router();
 
@@ -12,7 +12,12 @@ router.post("/register", async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 5);
-        const result = await User.addUser(username, email, hashedPassword, role);
+        const result = await User.addUser(
+            username,
+            email,
+            hashedPassword,
+            role
+        );
         res.status(201).json({
             message: `Welcome to FilmFaves, ${result.rows[0].username}`,
         });
@@ -84,8 +89,5 @@ router.get("/logout", async (req, res) => {
         res.status(500).json({ message: "An error occurred during logout." });
     }
 });
-
-
-
 
 module.exports = router;
