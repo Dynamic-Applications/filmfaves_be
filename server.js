@@ -5,7 +5,7 @@ const welcomeRouter = require("./api/welcome/welcome-router");
 const moviesRouter = require("./api/movies/movies-router");
 const usersRouter = require("./api/users-roles/users-roles-router");
 const authRouter = require("./api/auth/auth-router");
-const passResetsRouter = require("./api/pass-resets/pass-resets-router");
+const passResetsRouter = require("./api/passResets/passResets-router");
 
 const server = express();
 
