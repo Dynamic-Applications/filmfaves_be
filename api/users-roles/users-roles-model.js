@@ -69,40 +69,30 @@ const addUser = async (username, email, password, role_names = ["user"]) => {
     }
 };
 
-const findUsersByRole = async (role_name) => {
+const findUsersByRoleId = async (role_id) => {
     return db.query(
-        `SELECT users.id, users.username, users.email 
+        `SELECT users.id, users.username, users.email, roles.role_name 
         FROM users 
         JOIN user_roles ON users.id = user_roles.user_id 
         JOIN roles ON user_roles.role_id = roles.id 
-        WHERE roles.role_name = $1`,
-        [role_name]
+        WHERE roles.id = $1`,
+        [role_id]
     );
 };
 
-const assignRoleToUser = async (userId, roleName) => {
+const assignRoleToUser = async (userId, roleId) => {
     try {
-        const roleResult = await db.query(
-            "SELECT id FROM roles WHERE role_name = $1",
-            [roleName]
-        );
-
-        if (roleResult.rows.length === 0) {
-            throw new Error("Role not found");
-        }
-
-        const roleId = roleResult.rows[0].id;
-
         const result = await db.query(
             "INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) RETURNING *",
             [userId, roleId]
         );
 
-        return result.rows[0];
+        return result.rows[0]; // Return assigned role details
     } catch (error) {
         throw error;
     }
 };
+
 
 const removeRoleFromUser = async (userId, roleName) => {
     try {
@@ -140,7 +130,7 @@ module.exports = {
     findById,
     addUser,
     assignRoleToUser,
-    findUsersByRole,
+    findUsersByRoleId,
     removeRoleFromUser,
     deleteUser,
 };

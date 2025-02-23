@@ -6,7 +6,7 @@ const { restricted } = require("../auth/auth-middleware");
 const router = express.Router();
 
 // Get all users with their roles
-router.get("/role", restricted, async (req, res) => {
+router.get("/", restricted, async (req, res) => {
     try {
         const result = await User.findAll();
         if (!result.rows || result.rows.length === 0) {
@@ -40,52 +40,51 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// Get users by role name
-router.get("/role/:role_name", restricted, async (req, res) => {
-    const { role_name } = req.params;
+// Get users by role id
+router.get("/roles/:id", async (req, res) => {
+    const roleId = parseInt(req.params.id, 10);
+    if (isNaN(roleId)) {
+        return res.status(400).json({ message: "Invalid role ID" });
+    }
 
     try {
-        const result = await User.findUsersByRole(role_name);
+        const result = await User.findUsersByRoleId(roleId);
         if (!result.rows || result.rows.length === 0) {
             return res
                 .status(404)
-                .json({ message: `No users found for role: ${role_name}` });
+                .json({ message: `No users found for role: ${roleId}` });
         }
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({
-            message: `Failed to retrieve users by role: ${err.message}`,
+            message: `Failed to retrieve users by role id: ${err.message}`,
         });
     }
 });
 
 // Assign a role to a user
-router.put("/:userId/assign-role", async (req, res) => {
-    const { userId } = req.params;
-    const { role_name } = req.body;
+router.post("/assign-role", async (req, res) => {
+    const { userId, roleId } = req.body;
 
-    // Validate the input
-    if (!role_name) {
-        return res.status(400).json({ message: "Role name is required" });
+    if (!userId || !roleId) {
+        return res
+            .status(400)
+            .json({ message: "User ID and Role ID are required" });
     }
 
     try {
-        // Call the model function to assign the role
-        const result = await User.assignRoleToUser(userId, role_name);
-
-        // Respond with the result
-        res.status(200).json({
-            message: `Role ${role_name} assigned successfully to user ${userId}`,
-            roleAssignment: result,
+        const assignedRole = await User.assignRoleToUser(userId, roleId);
+        res.status(201).json({
+            message: "Role assigned successfully",
+            assignedRole,
         });
-    } catch (err) {
-        // Handle errors (e.g., role not found, etc.)
-        console.error(err);
+    } catch (error) {
         res.status(500).json({
-            message: `Failed to assign role: ${err.message}`,
+            message: `Failed to assign role: ${error.message}`,
         });
     }
 });
+
 
 // Remove a role from a user
 router.put("/:userId/remove-role", async (req, res) => {
