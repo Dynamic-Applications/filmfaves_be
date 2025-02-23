@@ -24,10 +24,16 @@ router.get("/", restricted, async (req, res) => {
 router.get("/roles", async (req, res) => {
     try {
         const result = await User.findAllRoles();
+        
+        // If there are no roles found, return 404 error
         if (!result.rows || result.rows.length === 0) {
             return res.status(404).json({ message: "No roles found." });
         }
-        res.json(result.rows);
+        
+        // Extract rows directly and send them as the response
+        const rolesArray = result.rows.map(role => role.role_name);  // If you need only the role names
+        res.json(rolesArray);  // Send only the array of role names (or full objects if needed)
+
     } catch (err) {
         res.status(500).json({
             message: `Failed to retrieve roles: ${err.message}`,
@@ -122,33 +128,57 @@ router.put("/:userId/assign-role", async (req, res) => {
 
 
 
-// Remove a role from a user
-router.put("/:userId/remove-role", async (req, res) => {
+// Unassign roles from a user
+router.put("/:userId/remove-roles", async (req, res) => {
     const { userId } = req.params;
-    const { role_name } = req.body;
+    const { roles } = req.body;  // Expecting an array of role objects or role names
 
     // Validate the input
-    if (!role_name) {
-        return res.status(400).json({ message: "Role name is required" });
+    if (!Array.isArray(roles) || roles.length === 0) {
+        return res.status(400).json({ message: "Roles should be an array and cannot be empty" });
     }
 
     try {
-        // Call the model function to remove the role
-        const result = await User.removeRoleFromUser(userId, role_name);
+        const notFoundRoles = [];
 
-        // Respond with the result
+        // Extract role names from role objects (if the input is in object form)
+        const roleNames = roles.map(role => typeof role === "object" ? role.role_name : role);
+
+        // Loop through the role names and attempt to remove them from the user
+        for (const roleName of roleNames) {
+            try {
+                const result = await User.removeRoleFromUser(userId, roleName);
+                if (!result) {
+                    notFoundRoles.push(roleName);  // Track roles that could not be found
+                }
+            } catch (err) {
+                // Handle individual role errors, track the ones that failed
+                notFoundRoles.push(roleName);
+            }
+        }
+
+        // If there are any roles that couldn't be removed, send the error message
+        if (notFoundRoles.length > 0) {
+            return res.status(404).json({
+                message: `These roles were not found or could not be removed: ${notFoundRoles.join(", ")}`,
+            });
+        }
+
+        // If all roles were removed successfully
         res.status(200).json({
-            message: `Role ${role_name} removed successfully from user ${userId}`,
-            roleAssignment: result,
+            message: "Roles removed successfully from user",
         });
+
     } catch (err) {
-        // Handle errors (e.g., role not found, etc.)
+        // Handle unexpected errors
         console.error(err);
         res.status(500).json({
-            message: `Failed to remove role: ${err.message}`,
+            message: `Failed to remove roles: ${err.message}`,
         });
     }
 });
+
+
 
 // Delete a user by ID
 router.delete("/:id", async (req, res) => {
