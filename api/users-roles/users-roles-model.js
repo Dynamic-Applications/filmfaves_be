@@ -125,31 +125,37 @@ const assignRoleToUser = async (userId, roleId) => {
 const unassignRoleFromUser = async (userId, roleName) => {
     const client = await db.connect();
     try {
-        await client.query("BEGIN"); // Start a transaction
+        await client.query("BEGIN");
 
-        // 1. Check if the role exists
+        console.log("Checking role existence for:", roleName);
+
         const roleResult = await client.query(
             "SELECT id FROM roles WHERE role_name = $1",
             [roleName]
         );
 
         if (roleResult.rows.length === 0) {
+            console.log(`Role '${roleName}' not found in database`);
             throw new Error(`Role '${roleName}' not found`);
         }
 
         const roleId = roleResult.rows[0].id;
+        console.log(`Role ID found: ${roleId}`);
 
-        // 2. Check if the user has the role before attempting to remove it
+        console.log(`Checking if user ${userId} has role ${roleName}`);
+
         const userRoleCheck = await client.query(
             "SELECT 1 FROM user_roles WHERE user_id = $1 AND role_id = $2",
             [userId, roleId]
         );
 
         if (userRoleCheck.rows.length === 0) {
+            console.log(`User ${userId} does not have role '${roleName}'`);
             throw new Error(`User does not have the role '${roleName}'`);
         }
 
-        // 3. Remove the role from the user
+        console.log(`Removing role '${roleName}' from user ${userId}`);
+
         const deleteResult = await client.query(
             "DELETE FROM user_roles WHERE user_id = $1 AND role_id = $2",
             [userId, roleId]
@@ -161,18 +167,29 @@ const unassignRoleFromUser = async (userId, roleName) => {
             );
         }
 
-        // Commit the transaction
         await client.query("COMMIT");
 
+        console.log(
+            `Role '${roleName}' successfully removed from user ${userId}`
+        );
         return {
             message: `Role '${roleName}' successfully removed from user ${userId}`,
         };
     } catch (error) {
-        await client.query("ROLLBACK"); // Rollback on error
-        throw error; // Re-throw the error to be caught by the controller
+        await client.query("ROLLBACK");
+        console.error(error);
+        throw error;
     } finally {
-        client.release(); // Always release the client back to the pool
+        client.release();
     }
+};
+
+// remove role from user
+const removeRoleFromUser = async (userId, roleId) => {
+    return db.query(
+        "DELETE FROM user_roles WHERE user_id = $1 AND role_id = $2",
+        [userId, roleId]
+    );
 };
 
 
@@ -193,5 +210,6 @@ module.exports = {
     findUsersByRoleId,
     findRoleById,
     unassignRoleFromUser,
+    removeRoleFromUser,
     deleteUser,
 };
