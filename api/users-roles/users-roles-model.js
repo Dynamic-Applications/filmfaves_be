@@ -11,6 +11,10 @@ const findAll = async () => {
     );
 };
 
+const findAllRoles = async () => {
+    return db.query("SELECT * FROM roles");
+};
+
 const findByUsername = async (username) => {
     return db.query(
         `SELECT users.id, users.username, users.email, users.password, 
@@ -126,6 +130,7 @@ const deleteUser = async (id) => {
 
 module.exports = {
     findAll,
+    findAllRoles,
     findByUsername,
     findById,
     addUser,

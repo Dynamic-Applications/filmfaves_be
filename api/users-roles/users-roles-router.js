@@ -20,6 +20,21 @@ router.get("/", restricted, async (req, res) => {
     }
 });
 
+// Get all roles
+router.get("/roles", async (req, res) => {
+    try {
+        const result = await User.findAllRoles();
+        if (!result.rows || result.rows.length === 0) {
+            return res.status(404).json({ message: "No roles found." });
+        }
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({
+            message: `Failed to retrieve roles: ${err.message}`,
+        });
+    }
+});
+
 // Get a user by ID with their roles
 router.get("/:id", async (req, res) => {
     const userId = parseInt(req.params.id, 10);
@@ -63,27 +78,46 @@ router.get("/roles/:id", async (req, res) => {
 });
 
 // Assign a role to a user
-router.post("/assign-role", async (req, res) => {
-    const { userId, roleId } = req.body;
+router.put("/assign-role", async (req, res) => {
+    const { userId, roleId } = req.body; // Extract userId and roleId from the body
 
+    // Check if userId and roleId are provided
     if (!userId || !roleId) {
-        return res
-            .status(400)
-            .json({ message: "User ID and Role ID are required" });
+        return res.status(400).json({ message: "User ID and Role ID are required" });
     }
 
+    // Log the values for debugging
+    console.log("User ID:", userId);
+    console.log("Role ID:", roleId);
+
     try {
+        // Check if userId exists in the users table
+        const userExists = await User.findById(userId); // Make sure findById is a valid method for User
+        if (!userExists) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if roleId exists in the roles table
+        const roleExists = await Role.findById(roleId); // Query the Role model instead of User
+        if (!roleExists) {
+            return res.status(404).json({ message: "Role not found" });
+        }
+
+        // Assign role to user
         const assignedRole = await User.assignRoleToUser(userId, roleId);
         res.status(201).json({
             message: "Role assigned successfully",
             assignedRole,
         });
     } catch (error) {
+        console.error("Error assigning role:", error);
         res.status(500).json({
             message: `Failed to assign role: ${error.message}`,
         });
     }
 });
+
+
 
 
 // Remove a role from a user

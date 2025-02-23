@@ -7,9 +7,10 @@ exports.seed = async function (knex) {
     // Insert roles first
     const roles = await knex("roles")
         .insert([
-            { role_name: "admin" },
-            { role_name: "user" },
-            { role_name: "guest" },
+            { id: 1, role_name: "admin" },
+            { id: 2, role_name: "user" },
+            { id: 3, role_name: "guest" },
+            { id: 4, role_name: "super_admin" },
         ])
         .returning("*"); // Gets inserted roles with IDs
 
