@@ -78,17 +78,17 @@ router.get("/roles/:id", async (req, res) => {
 });
 
 // Assign a role to a user
-router.put("/assign-role", async (req, res) => {
+router.put("/:userId/assign-role", async (req, res) => {
     const { userId, roleId } = req.body;
 
     // Validate inputs
-    if (!userId || !roleId) {
+    if (!roleId) {
         return res.status(400).json({ message: "User ID and Role ID are required" });
     }
 
     try {
         // Log userId and roleId for debugging
-        console.log("User ID:", userId);
+        // console.log("User ID:", userId);
         console.log("Role ID:", roleId);
 
         // Check if the user exists in the users table
