@@ -84,6 +84,18 @@ const findUsersByRoleId = async (role_id) => {
     );
 };
 
+const findRoleById = async (roleId) => {
+    try {
+        const roleResult = await db.query("SELECT * FROM roles WHERE id = $1", [
+            roleId,
+        ]);
+        return roleResult.rows[0]; // Return the role if found
+    } catch (error) {
+        throw new Error("Role not found");
+    }
+};
+
+
 const assignRoleToUser = async (userId, roleId) => {
     try {
         const result = await db.query(
@@ -136,6 +148,7 @@ module.exports = {
     addUser,
     assignRoleToUser,
     findUsersByRoleId,
+    findRoleById,
     removeRoleFromUser,
     deleteUser,
 };

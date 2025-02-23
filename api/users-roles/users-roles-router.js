@@ -79,31 +79,31 @@ router.get("/roles/:id", async (req, res) => {
 
 // Assign a role to a user
 router.put("/assign-role", async (req, res) => {
-    const { userId, roleId } = req.body; // Extract userId and roleId from the body
+    const { userId, roleId } = req.body;
 
-    // Check if userId and roleId are provided
+    // Validate inputs
     if (!userId || !roleId) {
         return res.status(400).json({ message: "User ID and Role ID are required" });
     }
 
-    // Log the values for debugging
-    console.log("User ID:", userId);
-    console.log("Role ID:", roleId);
-
     try {
-        // Check if userId exists in the users table
-        const userExists = await User.findById(userId); // Make sure findById is a valid method for User
+        // Log userId and roleId for debugging
+        console.log("User ID:", userId);
+        console.log("Role ID:", roleId);
+
+        // Check if the user exists in the users table
+        const userExists = await User.findById(userId);
         if (!userExists) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Check if roleId exists in the roles table
-        const roleExists = await Role.findById(roleId); // Query the Role model instead of User
+        // Check if the role exists in the roles table
+        const roleExists = await User.findRoleById(roleId);  // Fixed here: just pass roleId
         if (!roleExists) {
             return res.status(404).json({ message: "Role not found" });
         }
 
-        // Assign role to user
+        // Assign the role to the user
         const assignedRole = await User.assignRoleToUser(userId, roleId);
         res.status(201).json({
             message: "Role assigned successfully",
@@ -116,6 +116,8 @@ router.put("/assign-role", async (req, res) => {
         });
     }
 });
+
+
 
 
 
