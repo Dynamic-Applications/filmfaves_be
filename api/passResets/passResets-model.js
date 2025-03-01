@@ -18,11 +18,16 @@ const findByEmail = async (email) => {
 // Find user by reset token
 const findByResetToken = async (resetToken) => {
     try {
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex");
+
         const result = await db.query(
             `SELECT * FROM users 
             WHERE reset_password_token = $1 
             AND reset_password_token_expires > NOW()`,
-            [resetToken]
+            [hashedToken]
         );
 
         if (!result.rows || result.rows.length === 0) {

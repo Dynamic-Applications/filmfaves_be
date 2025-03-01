@@ -19,7 +19,7 @@ const sendResetEmail = async (email, resetToken) => {
         from: `"FilmFaves Support" <${process.env.EMAIL_HOST_USER}>`,
         to: email,
         subject: "Password Reset Request",
-        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/passresets/reset-password/${resetToken}\n\nThis link will expire in 10 minutes.`,
+        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/reset-password/${resetToken}\n\nThis link will expire in 10 minutes.`,
     };
 
     return transporter.sendMail(mailOptions);
@@ -41,22 +41,22 @@ router.post("/", async (req, res) => {
         console.log("Generate Reset Token before hashing:", resetToken);
 
         // Step 2: Hash the token (this will be stored in the database)
-        // const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+        const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
 
         // Step 3: Token expiry time (10 minutes)
         const resetTokenExpiry = Date.now() + 10 * 60 * 1000;
 
 
         // Step 4: Store the hashed token in the database (not the plain token)
-        await User.updateResetToken(email, resetToken, resetTokenExpiry);
+        await User.updateResetToken(email, resetTokenHash, resetTokenExpiry);
         console.log("Generate Reset Token after hashing:", resetToken);
 
         // Step 5: Send the plain reset token to the user via email
         await sendResetEmail(email, resetToken);
 
-        // console.log(
-        //     `Stored hash ${resetTokenHash} with expiry ${resetTokenExpiry} for email ${email}`
-        // );
+        console.log(
+            `Stored hash ${resetTokenHash} with expiry ${resetTokenExpiry} for email ${email}`
+        );
 
         res.status(200).json({ message: "Password reset email sent!" });
     } catch (err) {
