@@ -5,25 +5,6 @@ const bcrypt = require("bcrypt");
 var nodemailer = require("nodemailer");
 const router = express.Router();
 
-const sendResetEmail = async (email, resetToken) => {
-    var transporter = nodemailer.createTransport({
-        service: process.env.EMAIL_HOST,
-        auth: {
-            user: process.env.EMAIL_HOST_USER,
-            pass: process.env.EMAIL_HOST_PASSWORD,
-        },
-    });
-
-    var mailOptions = {
-        from: `"FilmFaves Support" <${process.env.EMAIL_HOST_USER}>`,
-        to: email,
-        subject: "Password Reset Request",
-        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/reset-password/${resetToken}\n\nThis link will expire in 10 minutes.`,
-    };
-
-    return transporter.sendMail(mailOptions);
-}
-
 // Request a password reset
 router.post("/", async (req, res) => {
     const { email } = req.body;
@@ -56,6 +37,25 @@ router.post("/", async (req, res) => {
     }
 });
 
+// Send email to reset password
+const sendResetEmail = async (email, resetToken) => {
+    var transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_HOST,
+        auth: {
+            user: process.env.EMAIL_HOST_USER,
+            pass: process.env.EMAIL_HOST_PASSWORD,
+        },
+    });
+
+    var mailOptions = {
+        from: `"FilmFaves Support" <${process.env.EMAIL_HOST_USER}>`,
+        to: email,
+        subject: "Password Reset Request",
+        text: `To reset your password, please click the link below:\n\n${process.env.UI_URL_PROD}/reset-password/${resetToken}\n\nThis link will expire in 10 minutes.`,
+    };
+
+    return transporter.sendMail(mailOptions);
+};
 
 // Reset the password
 router.post("/reset-password", async (req, res) => {
