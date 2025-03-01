@@ -10,7 +10,7 @@ exports.seed = async function (knex) {
             { id: 1, role_name: "admin" },
             { id: 2, role_name: "user" },
             { id: 3, role_name: "guest" },
-            { id: 4, role_name: "super_admin" },
+            { id: 4, role_name: "superAdmin" },
         ])
         .returning("*"); // Gets inserted roles with IDs
 
@@ -18,9 +18,9 @@ exports.seed = async function (knex) {
     const users = await knex("users")
         .insert([
             {
-                username: "super-admin",
-                email: "superadmin@example.com",
-                password: "hashedpassword4",
+                username: "superAdminUser",
+                email: "super@example.com",
+                password: "superPassword",
             },
             {
                 username: "adminUser",
@@ -44,7 +44,7 @@ exports.seed = async function (knex) {
     const userRoles = [
         {
             user_id: users[0].id,
-            role_id: roles.find((r) => r.role_name === "super_admin").id,
+            role_id: roles.find((r) => r.role_name === "superAdmin").id,
         },
         {
             user_id: users[1].id,

@@ -5,38 +5,6 @@ const bcrypt = require("bcrypt");
 var nodemailer = require("nodemailer");
 const router = express.Router();
 
-// Request a password reset
-router.post("/", async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        const user = await User.findByEmail(email);
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
-
-        const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // Token expires in 10 minutes
-
-        await User.updateResetToken(email, resetTokenHash, resetTokenExpiry);
-
-        console.log(
-            `Token ${resetToken} with expiry ${resetTokenExpiry} saved for email ${email}`
-        );
-
-        await sendResetEmail(email, resetToken);
-
-        res.status(200).json({ message: "Password reset email sent!" });
-    } catch (err) {
-        res.status(500).json({
-            message: `Failed to request password reset: ${err.message}`,
-        });
-    }
-});
-
 // Send email to reset password
 const sendResetEmail = async (email, resetToken) => {
     var transporter = nodemailer.createTransport({
@@ -56,6 +24,49 @@ const sendResetEmail = async (email, resetToken) => {
 
     return transporter.sendMail(mailOptions);
 };
+
+// Request a password reset
+router.post("/", async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findByEmail(email);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Step 1: Generate the plain reset token (this is the token we will send via email)
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        console.log("Generate Reset Token before hashing:", resetToken);
+
+        // Step 2: Hash the token (this will be stored in the database)
+        const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+        // Step 3: Token expiry time (10 minutes)
+        const resetTokenExpiry = Date.now() + 10 * 60 * 1000;
+
+        // console.log("Reset Token:", resetToken)
+        // console.log("Reset Token:", resetToken, "Reset Token Hash:", resetTokenHash)
+
+        // Step 4: Store the hashed token in the database (not the plain token)
+        await User.updateResetToken(email, resetTokenHash, resetTokenExpiry);
+        console.log("Generate Reset Token after hashing:", resetToken);
+
+        // Step 5: Send the plain reset token to the user via email
+        await sendResetEmail(email, resetToken);
+
+        // console.log(
+        //     `Stored hash ${resetTokenHash} with expiry ${resetTokenExpiry} for email ${email}`
+        // );
+
+        res.status(200).json({ message: "Password reset email sent!" });
+    } catch (err) {
+        res.status(500).json({
+            message: `Failed to request password reset: ${err.message}`,
+        });
+    }
+});
 
 // Reset the password
 router.post("/reset-password", async (req, res) => {
