@@ -10,17 +10,6 @@ const passResetsRouter = require("./api/passResets/passResets-router");
 const server = express();
 
 // Configure CORS
-// const allowedOrigins = [
-//     "http://localhost:3000", // Development frontend
-//     process.env.UI_URL_PROD, // Production frontend
-// ];
-// server.use(
-//     cors({
-//         origin: allowedOrigins,
-//         credentials: true, // Allow cookies or auth headers
-//     })
-// );
-
 const allowedOrigins = [
     "http://localhost:3000",
     "https://filmfaves-nine.vercel.app",
