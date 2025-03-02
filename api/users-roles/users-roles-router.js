@@ -126,57 +126,79 @@ router.put("/:userId/assign-role", async (req, res) => {
 
 
 
+// Unassign a role from a user
+router.put("/:userId/unassign-role", async (req, res) => {
+    const { userId, roleName } = req.body;
 
-
-// Unassign roles from a user
-router.put("/:userId/remove-roles", async (req, res) => {
-    const { userId } = req.params;
-    let { roles } = req.body;  
-
-    console.log("Received roles in request:", roles);
-    console.log("Received user ID in request:", userId);
-
-    // Ensure roles is a valid array
-    if (!Array.isArray(roles)) {
-        return res.status(400).json({ message: "Roles should be an array." });
-    }
-
-    // If roles array is empty, return an appropriate error
-    if (roles.length === 0) {
-        return res.status(400).json({ message: "Roles array cannot be empty." });
+    // Validate inputs
+    if (!roleName) {
+        return res.status(400).json({ message: "User ID and Role Name are required" });
     }
 
     try {
-        
-        const roleNames = roles.map(role => typeof role === "object" ? role.role_name : role);
-        console.log("Role names to remove:", roleNames);
-
-        const notFoundRoles = [];
-        for (const roleName of roleNames) {
-            try {
-                const result = await User.removeRoleFromUser(userId, "admin");
-                console.log("Result of removing role:", result);
-                if (!result) {
-                    notFoundRoles.push(roleName);
-                }
-            } catch (err) {
-                notFoundRoles.push(roleName);
-            }
-        }
-
-        if (notFoundRoles.length > 0) {
-            return res.status(404).json({
-                message: `These roles were not found or could not be removed: ${notFoundRoles.join(", ")}`,
-            });
-        }
-
-        res.status(200).json({ message: "Roles removed successfully from user" });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: `Failed to remove roles: ${err.message}` });
+        // Attempt to unassign the role
+        const result = await User.unassignRoleFromUser(userId, roleName);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error("Error unassigning role:", error);
+        res.status(500).json({
+            message: `Failed to unassign role: ${error.message}`,
+        });
     }
 });
+
+
+
+
+// // Unassign roles from a user
+// router.put("/:userId/remove-roles", async (req, res) => {
+//     const { userId } = req.params;
+//     let { roles } = req.body;  
+
+//     console.log("Received roles in request:", roles);
+//     console.log("Received user ID in request:", userId);
+
+//     // Ensure roles is a valid array
+//     if (!Array.isArray(roles)) {
+//         return res.status(400).json({ message: "Roles should be an array." });
+//     }
+
+//     // If roles array is empty, return an appropriate error
+//     if (roles.length === 0) {
+//         return res.status(400).json({ message: "Roles array cannot be empty." });
+//     }
+
+//     try {
+        
+//         const roleNames = roles.map(role => typeof role === "object" ? role.role_name : role);
+//         console.log("Role names to remove:", roleNames);
+
+//         const notFoundRoles = [];
+//         for (const roleName of roleNames) {
+//             try {
+//                 const result = await User.removeRoleFromUser(userId, "admin");
+//                 console.log("Result of removing role:", result);
+//                 if (!result) {
+//                     notFoundRoles.push(roleName);
+//                 }
+//             } catch (err) {
+//                 notFoundRoles.push(roleName);
+//             }
+//         }
+
+//         if (notFoundRoles.length > 0) {
+//             return res.status(404).json({
+//                 message: `These roles were not found or could not be removed: ${notFoundRoles.join(", ")}`,
+//             });
+//         }
+
+//         res.status(200).json({ message: "Roles removed successfully from user" });
+
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: `Failed to remove roles: ${err.message}` });
+//     }
+// });
 
 
 
