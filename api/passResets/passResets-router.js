@@ -72,7 +72,7 @@ router.post("/reset-password", async (req, res) => {
 
     try {
         const user = await User.findByResetToken(resetToken);
-        console.log("User found by reset token:", user); // Debugging
+        console.log("User found by reset token:", user);
 
         if (!user) {
             return res
