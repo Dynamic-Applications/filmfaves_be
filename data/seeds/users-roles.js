@@ -7,10 +7,10 @@ exports.seed = async function (knex) {
     // Insert roles first
     const roles = await knex("roles")
         .insert([
-            { id: 1, role_name: "admin" },
-            { id: 2, role_name: "user" },
-            { id: 3, role_name: "guest" },
-            { id: 4, role_name: "superAdmin" },
+            { id: 1, role_name: "Admin" },
+            { id: 2, role_name: "User" },
+            { id: 3, role_name: "Guest" },
+            { id: 4, role_name: "Super Admin" },
         ])
         .returning("*"); // Gets inserted roles with IDs
 
@@ -44,19 +44,19 @@ exports.seed = async function (knex) {
     const userRoles = [
         {
             user_id: users[0].id,
-            role_id: roles.find((r) => r.role_name === "superAdmin").id,
+            role_id: roles.find((r) => r.role_name === "Super Admin").id,
         },
         {
             user_id: users[1].id,
-            role_id: roles.find((r) => r.role_name === "admin").id,
+            role_id: roles.find((r) => r.role_name === "Admin").id,
         },
         {
             user_id: users[2].id,
-            role_id: roles.find((r) => r.role_name === "user").id,
+            role_id: roles.find((r) => r.role_name === "User").id,
         },
         {
             user_id: users[3].id,
-            role_id: roles.find((r) => r.role_name === "guest").id,
+            role_id: roles.find((r) => r.role_name === "Guest").id,
         },
     ];
 

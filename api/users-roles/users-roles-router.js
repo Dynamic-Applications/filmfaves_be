@@ -84,8 +84,8 @@ router.get("/roles/:id", async (req, res) => {
 });
 
 router.put("/:userId/assign-role", async (req, res) => {
-    const userId = parseInt(req.params.userId, 10); // Get userId from URL
-    const { roleId } = req.body; // Get roleId from the body
+    
+    const { userId, roleId } = req.body; // Get roleId from the body
 
     // Validate inputs
     if (!roleId) {
