@@ -41,7 +41,7 @@ const findById = async (id) => {
     );
 };
 
-const addUser = async (username, email, password, role_names = ["user"]) => {
+const addUser = async (username, email, password, role_names = ["User"]) => {
     try {
         if (!Array.isArray(role_names)) {
             role_names = [role_names];

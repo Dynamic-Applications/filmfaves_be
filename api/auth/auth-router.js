@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
     const { username, email, password, role_name } = req.body;
 
-    const role = role_name || "user";
+    const role = role_name || "User";
 
     try {
         const hashedPassword = await bcrypt.hash(password, 5);
@@ -49,7 +49,7 @@ router.post("/login", async (req, res, next) => {
         }
 
         const roleName =
-            user.roles && user.roles.length > 0 ? user.roles[0] : "user";
+            user.roles && user.roles.length > 0 ? user.roles[0] : "User";
 
         const token = buildToken(user, roleName);
         res.status(200).json({
