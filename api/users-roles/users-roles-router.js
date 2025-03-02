@@ -83,18 +83,20 @@ router.get("/roles/:id", async (req, res) => {
     }
 });
 
-// Assign a role to a user
 router.put("/:userId/assign-role", async (req, res) => {
-    const { userId, roleId } = req.body;
+    const userId = parseInt(req.params.userId, 10); // Get userId from URL
+    const { roleId } = req.body; // Get roleId from the body
 
     // Validate inputs
     if (!roleId) {
-        return res.status(400).json({ message: "User ID and Role ID are required" });
+        return res
+            .status(400)
+            .json({ message: "User ID and Role ID are required" });
     }
 
     try {
         // Log userId and roleId for debugging
-        // console.log("User ID:", userId);
+        console.log("User ID:", userId);
         console.log("Role ID:", roleId);
 
         // Check if the user exists in the users table
@@ -104,7 +106,7 @@ router.put("/:userId/assign-role", async (req, res) => {
         }
 
         // Check if the role exists in the roles table
-        const roleExists = await User.findRoleById(roleId);  // Fixed here: just pass roleId
+        const roleExists = await User.findRoleById(roleId); // Use roleId, not roleName
         if (!roleExists) {
             return res.status(404).json({ message: "Role not found" });
         }
@@ -122,8 +124,6 @@ router.put("/:userId/assign-role", async (req, res) => {
         });
     }
 });
-
-
 
 
 // Unassign a role from a user
