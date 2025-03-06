@@ -83,15 +83,13 @@ router.get("/roles/:id", async (req, res) => {
     }
 });
 
+// Assign role to user
 router.put("/:userId/assign-role", async (req, res) => {
-
     const { userId, roleId } = req.body; // Get roleId from the body
 
     // Validate inputs
     if (!roleId) {
-        return res
-            .status(400)
-            .json({ message: "User ID and Role ID are required" });
+        return res.status(400).json({ message: "User ID and Role ID are required" });
     }
 
     try {
@@ -125,20 +123,34 @@ router.put("/:userId/assign-role", async (req, res) => {
     }
 });
 
-
-// Unassign a role from a user
+// Unassign role from user (Updated to use roleId)
 router.put("/:userId/unassign-role", async (req, res) => {
-    const { userId, roleName } = req.body;
+    const { userId, roleId } = req.body; // Changed from roleName to roleId
 
     // Validate inputs
-    if (!roleName) {
-        return res.status(400).json({ message: "User ID and Role Name are required" });
+    if (!roleId) {
+        return res.status(400).json({ message: "User ID and Role ID are required" });
     }
 
     try {
-        // Attempt to unassign the role
-        const result = await User.unassignRoleFromUser(userId, roleName);
-        res.status(200).json(result);
+        // Check if the user exists in the users table
+        const userExists = await User.findById(userId);
+        if (!userExists) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if the role exists in the roles table
+        const roleExists = await User.findRoleById(roleId); // Use roleId, not roleName
+        if (!roleExists) {
+            return res.status(404).json({ message: "Role not found" });
+        }
+
+        // Unassign the role from the user
+        const unassignedRole = await User.unassignRoleFromUser(userId, roleId);
+        res.status(200).json({
+            message: "Role unassigned successfully",
+            unassignedRole,
+        });
     } catch (error) {
         console.error("Error unassigning role:", error);
         res.status(500).json({
@@ -146,6 +158,7 @@ router.put("/:userId/unassign-role", async (req, res) => {
         });
     }
 });
+
 
 // Delete a user by ID
 router.delete("/:id", async (req, res) => {

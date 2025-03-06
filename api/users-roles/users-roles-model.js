@@ -122,19 +122,17 @@ const assignRoleToUser = async (userId, roleId) => {
 };
 
 
-const unassignRoleFromUser = async (userId, roleName) => {
+const unassignRoleFromUser = async (userId, roleId) => {
     try {
-        // Get the role ID from the role name
+        // Check if the role exists by roleId
         const roleResult = await db.query(
-            "SELECT id FROM roles WHERE role_name = $1",
-            [roleName]
+            "SELECT id FROM roles WHERE id = $1",
+            [roleId]
         );
 
         if (roleResult.rows.length === 0) {
-            throw new Error(`Role '${roleName}' not found`);
+            throw new Error(`Role with ID '${roleId}' not found`);
         }
-
-        const roleId = roleResult.rows[0].id;
 
         // Check if the user has this role
         const userRoleCheck = await db.query(
@@ -143,7 +141,7 @@ const unassignRoleFromUser = async (userId, roleName) => {
         );
 
         if (userRoleCheck.rows.length === 0) {
-            throw new Error(`User does not have the role '${roleName}'`);
+            throw new Error(`User does not have the role with ID '${roleId}'`);
         }
 
         // Remove the role from the user
@@ -154,18 +152,19 @@ const unassignRoleFromUser = async (userId, roleName) => {
 
         if (deleteResult.rowCount === 0) {
             throw new Error(
-                `Failed to remove the role '${roleName}' from the user`
+                `Failed to remove the role with ID '${roleId}' from the user`
             );
         }
 
         return {
-            message: `Role '${roleName}' successfully removed from user ${userId}`,
+            message: `Role with ID '${roleId}' successfully removed from user ${userId}`,
         };
     } catch (error) {
         console.error("Error unassigning role:", error);
         throw error;
     }
 };
+
 
 
 // remove role from user
