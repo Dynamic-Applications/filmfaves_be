@@ -1,7 +1,5 @@
 const db = require("../../config/db");
 
-
-
 const findAll = async (currentUser) => {
     let query = `
         SELECT users.id, users.username, users.email, 
@@ -39,7 +37,6 @@ const findAll = async (currentUser) => {
 
     return db.query(query, values);
 };
-
 
 const findAllRoles = async () => {
     return db.query("SELECT * FROM roles");
@@ -128,15 +125,15 @@ const findRoleById = async (roleId) => {
 // find role by name
 const findRoleByName = async (roleName) => {
     try {
-        const roleResult = await db.query("SELECT * FROM roles WHERE role_name = $1", [
-            roleName,
-        ]);
+        const roleResult = await db.query(
+            "SELECT * FROM roles WHERE role_name = $1",
+            [roleName]
+        );
         return roleResult.rows[0]; // Return the role if found
     } catch (error) {
         throw new Error("Role not found");
     }
 };
-
 
 const assignRoleToUser = async (userId, roleId) => {
     try {
@@ -150,7 +147,6 @@ const assignRoleToUser = async (userId, roleId) => {
         throw error;
     }
 };
-
 
 const unassignRoleFromUser = async (userId, roleId) => {
     try {
@@ -195,8 +191,6 @@ const unassignRoleFromUser = async (userId, roleId) => {
     }
 };
 
-
-
 // remove role from user
 const removeRoleFromUser = async (userId, roleId) => {
     return db.query(
@@ -205,12 +199,9 @@ const removeRoleFromUser = async (userId, roleId) => {
     );
 };
 
-
 const deleteUser = async (id) => {
     return db.query("DELETE FROM users WHERE id = $1", [id]);
 };
-
-
 
 module.exports = {
     findAll,

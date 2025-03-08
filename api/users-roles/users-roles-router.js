@@ -36,21 +36,19 @@ router.get("/", restricted, async (req, res) => {
     }
 });
 
-
 // Get all roles
 router.get("/roles", async (req, res) => {
     try {
         const result = await User.findAllRoles();
-        
+
         // If there are no roles found, return 404 error
         if (!result.rows || result.rows.length === 0) {
             return res.status(404).json({ message: "No roles found." });
         }
-        
-        // Extract rows directly and send them as the response
-        const rolesArray = result.rows.map(role => role.role_name);  // If you need only the role names
-        res.json(rolesArray);  // Send only the array of role names (or full objects if needed)
 
+        // Extract rows directly and send them as the response
+        const rolesArray = result.rows.map((role) => role.role_name); // If you need only the role names
+        res.json(rolesArray); // Send only the array of role names (or full objects if needed)
     } catch (err) {
         res.status(500).json({
             message: `Failed to retrieve roles: ${err.message}`,
@@ -106,7 +104,9 @@ router.put("/:userId/assign-role", async (req, res) => {
 
     // Validate inputs
     if (!roleId) {
-        return res.status(400).json({ message: "User ID and Role ID are required" });
+        return res
+            .status(400)
+            .json({ message: "User ID and Role ID are required" });
     }
 
     try {
@@ -146,7 +146,9 @@ router.put("/:userId/unassign-role", async (req, res) => {
 
     // Validate inputs
     if (!roleId) {
-        return res.status(400).json({ message: "User ID and Role ID are required" });
+        return res
+            .status(400)
+            .json({ message: "User ID and Role ID are required" });
     }
 
     try {
@@ -175,7 +177,6 @@ router.put("/:userId/unassign-role", async (req, res) => {
         });
     }
 });
-
 
 // Delete a user by ID
 router.delete("/:id", async (req, res) => {
