@@ -6,9 +6,25 @@ const { restricted } = require("../auth/auth-middleware");
 const router = express.Router();
 
 // Get all users with their roles
+// router.get("/", restricted, async (req, res) => {
+//     try {
+//         const result = await User.findAll();
+//         if (!result.rows || result.rows.length === 0) {
+//             return res.status(404).json({ message: "No users found." });
+//         }
+//         res.json(result.rows);
+//     } catch (err) {
+//         res.status(500).json({
+//             message: `Failed to retrieve users: ${err.message}`,
+//         });
+//     }
+// });
+
 router.get("/", restricted, async (req, res) => {
     try {
-        const result = await User.findAll();
+        const currentUser = req.user; // Assuming req.user contains the logged-in user's details
+
+        const result = await User.findAll(currentUser);
         if (!result.rows || result.rows.length === 0) {
             return res.status(404).json({ message: "No users found." });
         }
@@ -19,6 +35,7 @@ router.get("/", restricted, async (req, res) => {
         });
     }
 });
+
 
 // Get all roles
 router.get("/roles", async (req, res) => {

@@ -1,15 +1,45 @@
 const db = require("../../config/db");
 
-const findAll = async () => {
-    return db.query(
-        `SELECT users.id, users.username, users.email, 
-        ARRAY_AGG(roles.role_name) AS roles 
+
+
+const findAll = async (currentUser) => {
+    let query = `
+        SELECT users.id, users.username, users.email, 
+        COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
         LEFT JOIN roles ON user_roles.role_id = roles.id 
-        GROUP BY users.id`
-    );
+    `;
+
+    let whereClauses = [];
+    let values = [];
+
+    if (currentUser.roles.includes("Admin")) {
+        // Admins should not see Super Admins
+        whereClauses.push(`users.id NOT IN (
+            SELECT user_roles.user_id 
+            FROM user_roles 
+            JOIN roles ON user_roles.role_id = roles.id 
+            WHERE roles.role_name = 'Super Admin'
+        )`);
+    } else if (
+        currentUser.roles.includes("User") ||
+        currentUser.roles.includes("Guest")
+    ) {
+        // Users and Guests should only see themselves
+        whereClauses.push(`users.id = $1`);
+        values.push(currentUser.id);
+    }
+
+    if (whereClauses.length > 0) {
+        query += ` WHERE ${whereClauses.join(" AND ")}`;
+    }
+
+    query += " GROUP BY users.id";
+
+    return db.query(query, values);
 };
+
 
 const findAllRoles = async () => {
     return db.query("SELECT * FROM roles");
@@ -18,7 +48,7 @@ const findAllRoles = async () => {
 const findByUsername = async (username) => {
     return db.query(
         `SELECT users.id, users.username, users.email, users.password, 
-        ARRAY_AGG(roles.role_name) AS roles 
+        COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
         LEFT JOIN roles ON user_roles.role_id = roles.id 
@@ -31,7 +61,7 @@ const findByUsername = async (username) => {
 const findById = async (id) => {
     return db.query(
         `SELECT users.id, users.username, users.email, 
-        ARRAY_AGG(roles.role_name) AS roles 
+        COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
         LEFT JOIN roles ON user_roles.role_id = roles.id 
