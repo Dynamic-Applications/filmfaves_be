@@ -53,7 +53,7 @@ router.post("/login", async (req, res, next) => {
 
         const token = buildToken(user, roleName);
         res.status(200).json({
-            message: `Welcome back, ${user.username}!, You are logged in as a ${roleName}`,
+            message: `Welcome back, ${user.username}!, You are logged in as ${roleName}`,
             token,
         });
     } catch (err) {

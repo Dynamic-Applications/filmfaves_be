@@ -2,7 +2,7 @@ const db = require("../../config/db");
 
 const findAll = async (currentUser) => {
     let query = `
-        SELECT users.id, users.username, users.email, 
+        SELECT users.id, users.username, users.email, users.created_at, 
         COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
@@ -44,7 +44,7 @@ const findAllRoles = async () => {
 
 const findByUsername = async (username) => {
     return db.query(
-        `SELECT users.id, users.username, users.email, users.password, 
+        `SELECT users.id, users.username, users.email, users.password, users.created_at,
         COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
@@ -57,7 +57,7 @@ const findByUsername = async (username) => {
 
 const findById = async (id) => {
     return db.query(
-        `SELECT users.id, users.username, users.email, 
+        `SELECT users.id, users.username, users.email, users.created_at,
         COALESCE(NULLIF(ARRAY_AGG(roles.role_name), '{NULL}'), ARRAY['No roles assigned']) AS roles 
         FROM users 
         LEFT JOIN user_roles ON users.id = user_roles.user_id 
@@ -102,7 +102,7 @@ const addUser = async (username, email, password, role_names = ["User"]) => {
 
 const findUsersByRoleId = async (role_id) => {
     return db.query(
-        `SELECT users.id, users.username, users.email, roles.role_name 
+        `SELECT users.id, users.username, users.email, roles.role_name, users.created_at,
         FROM users 
         JOIN user_roles ON users.id = user_roles.user_id 
         JOIN roles ON user_roles.role_id = roles.id 
