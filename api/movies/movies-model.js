@@ -1,25 +1,31 @@
 const db = require("../../config/db");
 
 const getAll = async () => {
-    return db.query("SELECT * FROM movies")
-}
+    return db.query("SELECT * FROM movies");
+};
 
 const getById = async (id) => {
-
     const result = await db.query("SELECT * FROM movies WHERE movie_id = $1", [
         id,
     ]);
-    return result.rows[0]; 
-}
+    return result.rows[0];
+};
 
-
-const addMovie = async (title, director, rate, genre, popular, description, image) => {
+const addMovie = async (
+    title,
+    director,
+    rate,
+    genre,
+    popular,
+    description,
+    image
+) => {
     return db.query(
         `INSERT INTO movies (title, director, rate, genre, popular, description, image)
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
         [title, director, rate, genre, popular, description, image]
     );
-}
+};
 
 const updateMovie = async (
     movie_id,
@@ -47,8 +53,8 @@ const updateMovie = async (
 };
 
 const removeMovie = async (id) => {
-    return db.query('DELETE FROM movies WHERE movie_id = $1 RETURNING *', [id])
-}
+    return db.query("DELETE FROM movies WHERE movie_id = $1 RETURNING *", [id]);
+};
 
 module.exports = {
     getAll,
@@ -56,4 +62,4 @@ module.exports = {
     addMovie,
     updateMovie,
     removeMovie,
-}
+};
